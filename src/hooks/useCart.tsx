@@ -35,31 +35,31 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
 
   const addProduct = async (productId: number) => {
     try {
-      const updatedCart = [...cart];
-      const productExists = updatedCart.find((product) => product.id === productId);
+      const updatedCart = [...cart]; //imutabilidade
+      const productExists = updatedCart.find((product) => product.id === productId); //se o produto já existe ou não no carrinho
       
       const stock = await api.get(`/stock/${productId}`);
-      const stockAmount = stock.data.amount;
-      const currentAmount = productExists ? productExists.amount : 0;
-      const amount = currentAmount + 1;
+      const stockAmount = stock.data.amount; // quantidade em estoque do produto clicado
+      const currentAmount = productExists ? productExists.amount : 0; //quantidade no carrinho
+      const amount = currentAmount + 1; // quantidade desejada ao clicar em +
 
       if (amount > stockAmount){
       toast.error('Produto esgotado');
       return;
       }
-      if(productExists){
+      if(productExists){ // se já existe no carrinho
         productExists.amount = amount;
-      }else {
+      }else { // se é um produto novo no carrinho
         const product = await api.get(`/products/${productId}`);
 
         const newProduct = {
           ...product.data,
-          amount: 1
+          amount: 1 //1 pois é a primeira vez sendo adicionado ao carrinho
         }
-        updatedCart.push(newProduct);
+        updatedCart.push(newProduct); 
       }
       setCart(updatedCart);
-      localStorage.setItem('@RocketShoes:cart', JSON.stringify(updatedCart));
+      localStorage.setItem('@RocketShoes:cart', JSON.stringify(updatedCart)); //seta os valores no localStorage passando o array para JSON
     } catch {
       toast.error('Erro na adição do produto');
     }
